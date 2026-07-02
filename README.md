@@ -4,7 +4,7 @@ Course: Advanced Web Dev - Streaming
 Student: Full Name (عدّل هذا الحقل باسمك)
 
 ## Demo Video
-https://youtu.be/your-link  <!-- ضع هنا رابط يوتيوب بعد الرفع -->
+https://youtu.be/RNae1VPeYrM <!-- ضع هنا رابط يوتيوب بعد الرفع -->
 
 ## Streaming
 - **Technique:** Server-Sent Events (SSE) over a single open HTTP connection (`GET /ticker/stream`), implemented manually in `TickerController.Stream()` by writing `data: ...\n\n` chunks to `Response.Body` and flushing after each one.
