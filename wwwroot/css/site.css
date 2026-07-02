@@ -1,0 +1,231 @@
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    background: #0b0f14;
+    color: #e8edf2;
+    font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+}
+
+.ticker-app {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 24px 16px 60px;
+}
+
+.app-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.app-header h1 {
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+.status {
+    font-size: 0.85rem;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.status-connecting { background: #3a3f47; color: #cfd6dd; }
+.status-live { background: #103d23; color: #4ade80; }
+.status-reconnecting { background: #3d2a10; color: #fbbf24; }
+
+.scoreboard {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #121821;
+    border: 1px solid #1f2733;
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.scoreboard .team {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.scoreboard .away { flex-direction: row-reverse; text-align: right; }
+
+.scoreboard .score {
+    font-size: 2.2rem;
+    font-weight: 800;
+    min-width: 48px;
+    text-align: center;
+    color: #60a5fa;
+}
+
+.clock {
+    text-align: center;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #f87171;
+}
+
+.match-state {
+    font-size: 0.75rem;
+    color: #9aa5b1;
+    font-weight: 500;
+    margin-top: 4px;
+}
+
+.probability { margin-bottom: 28px; }
+
+.probability h2 {
+    font-size: 1rem;
+    margin: 0 0 10px;
+}
+
+.probability h2 small {
+    color: #8a93a0;
+    font-weight: 400;
+    display: block;
+    font-size: 0.75rem;
+    margin-top: 2px;
+}
+
+.prob-bar {
+    display: flex;
+    width: 100%;
+    height: 34px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #1f2733;
+}
+
+.prob-seg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #0b0f14;
+    transition: width 0.6s ease;
+    white-space: nowrap;
+}
+
+.prob-home { background: #60a5fa; }
+.prob-draw { background: #9ca3af; }
+.prob-away { background: #f87171; }
+
+.prob-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: #9aa5b1;
+    margin-top: 6px;
+}
+
+.motm-banner {
+    background: linear-gradient(90deg, #3a2e0a, #514108);
+    border: 1px solid #facc15;
+    color: #fde68a;
+    font-weight: 700;
+    text-align: center;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 24px;
+    animation: fadeIn 0.4s ease;
+}
+
+.stats-section { margin-bottom: 28px; }
+
+.stats-section h2 {
+    font-size: 1rem;
+    margin-bottom: 10px;
+}
+
+.stats-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #121821;
+    border: 1px solid #1f2733;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.stats-table th, .stats-table td {
+    padding: 8px 12px;
+    text-align: center;
+    font-size: 0.85rem;
+}
+
+.stats-table thead th {
+    background: #1a212c;
+    color: #cfd6dd;
+    font-weight: 700;
+}
+
+.stats-table tbody td:nth-child(2) {
+    color: #9aa5b1;
+    font-weight: 500;
+}
+
+.stats-table tbody td:first-child,
+.stats-table tbody td:last-child {
+    font-weight: 700;
+    color: #e8edf2;
+    width: 30%;
+}
+
+.stats-table tbody tr:nth-child(even) { background: #0f141c; }
+
+.feed-section h2 {
+    font-size: 1rem;
+    margin-bottom: 10px;
+}
+
+.event-feed {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 420px;
+    overflow-y: auto;
+}
+
+.event-feed .event {
+    background: #121821;
+    border: 1px solid #1f2733;
+    border-left: 4px solid #4b5563;
+    border-radius: 8px;
+    padding: 10px 12px;
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+    animation: fadeIn 0.3s ease;
+}
+
+.event .minute {
+    color: #8a93a0;
+    font-weight: 700;
+    min-width: 32px;
+}
+
+.event .player {
+    color: #93c5fd;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.event-goal { border-left-color: #4ade80; }
+.event-redcard { border-left-color: #ef4444; }
+.event-yellowcard { border-left-color: #facc15; }
+.event-halftime, .event-fulltime, .event-kickoff { border-left-color: #60a5fa; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+}

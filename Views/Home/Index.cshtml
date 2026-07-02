@@ -1,0 +1,212 @@
+@{
+    ViewData["Title"] = "Live Sports Ticker";
+}
+
+<div class="ticker-app">
+    <header class="app-header">
+        <h1>🔴 Live Sports Ticker</h1>
+        <span id="status" class="status status-connecting">Connecting…</span>
+    </header>
+
+    <section class="scoreboard">
+        <div class="team home">
+            <span class="team-name" id="homeName">-</span>
+            <span class="score" id="homeScore">0</span>
+        </div>
+        <div class="clock">
+            <span id="minute">0</span>'
+            <div class="match-state" id="matchState">-</div>
+        </div>
+        <div class="team away">
+            <span class="score" id="awayScore">0</span>
+            <span class="team-name" id="awayName">-</span>
+        </div>
+    </section>
+
+    <div id="motmBanner" class="motm-banner" style="display:none;">
+        🏅 Man of the Match: <span id="motmPlayer"></span> (<span id="motmTeam"></span>)
+    </div>
+
+    <section class="probability">
+        <h2>Live Win Probability <small>(smart streaming idea — recalculated after every event)</small></h2>
+        <div class="prob-bar">
+            <div id="probHome" class="prob-seg prob-home" style="width:40%">40%</div>
+            <div id="probDraw" class="prob-seg prob-draw" style="width:20%">20%</div>
+            <div id="probAway" class="prob-seg prob-away" style="width:40%">40%</div>
+        </div>
+        <div class="prob-labels">
+            <span id="homeLabel">Home</span>
+            <span>Draw</span>
+            <span id="awayLabel">Away</span>
+        </div>
+    </section>
+
+    <section class="stats-section">
+        <h2>Match Statistics</h2>
+        <table class="stats-table">
+            <thead>
+                <tr><th id="statsHomeHeader">Home</th><th>Stat</th><th id="statsAwayHeader">Away</th></tr>
+            </thead>
+            <tbody>
+                <tr><td id="statHomePossession">50%</td><td>Possession</td><td id="statAwayPossession">50%</td></tr>
+                <tr><td id="statHomeShots">0</td><td>Shots</td><td id="statAwayShots">0</td></tr>
+                <tr><td id="statHomeShotsOnTarget">0</td><td>Shots on Target</td><td id="statAwayShotsOnTarget">0</td></tr>
+                <tr><td id="statHomeCorners">0</td><td>Corners</td><td id="statAwayCorners">0</td></tr>
+                <tr><td id="statHomeFouls">0</td><td>Fouls</td><td id="statAwayFouls">0</td></tr>
+                <tr><td id="statHomeOffsides">0</td><td>Offsides</td><td id="statAwayOffsides">0</td></tr>
+                <tr><td id="statHomeYellow">0</td><td>Yellow Cards</td><td id="statAwayYellow">0</td></tr>
+                <tr><td id="statHomeRed">0</td><td>Red Cards</td><td id="statAwayRed">0</td></tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="feed-section">
+        <h2>Live Event Feed</h2>
+        <ul id="eventFeed" class="event-feed"></ul>
+    </section>
+</div>
+
+@section Scripts {
+<script>
+    const statusEl = document.getElementById('status');
+    const homeNameEl = document.getElementById('homeName');
+    const awayNameEl = document.getElementById('awayName');
+    const homeLabelEl = document.getElementById('homeLabel');
+    const awayLabelEl = document.getElementById('awayLabel');
+    const homeScoreEl = document.getElementById('homeScore');
+    const awayScoreEl = document.getElementById('awayScore');
+    const minuteEl = document.getElementById('minute');
+    const matchStateEl = document.getElementById('matchState');
+    const probHomeEl = document.getElementById('probHome');
+    const probDrawEl = document.getElementById('probDraw');
+    const probAwayEl = document.getElementById('probAway');
+    const feedEl = document.getElementById('eventFeed');
+    const motmBanner = document.getElementById('motmBanner');
+    const motmPlayerEl = document.getElementById('motmPlayer');
+    const motmTeamEl = document.getElementById('motmTeam');
+
+    const statsHomeHeader = document.getElementById('statsHomeHeader');
+    const statsAwayHeader = document.getElementById('statsAwayHeader');
+    const statRefs = {
+        possession: [document.getElementById('statHomePossession'), document.getElementById('statAwayPossession')],
+        shots: [document.getElementById('statHomeShots'), document.getElementById('statAwayShots')],
+        shotsOnTarget: [document.getElementById('statHomeShotsOnTarget'), document.getElementById('statAwayShotsOnTarget')],
+        corners: [document.getElementById('statHomeCorners'), document.getElementById('statAwayCorners')],
+        fouls: [document.getElementById('statHomeFouls'), document.getElementById('statAwayFouls')],
+        offsides: [document.getElementById('statHomeOffsides'), document.getElementById('statAwayOffsides')],
+        yellow: [document.getElementById('statHomeYellow'), document.getElementById('statAwayYellow')],
+        red: [document.getElementById('statHomeRed'), document.getElementById('statAwayRed')]
+    };
+
+    function renderStats(match) {
+        const s = match.statistics;
+        if (!s) return;
+        statsHomeHeader.textContent = match.homeTeam;
+        statsAwayHeader.textContent = match.awayTeam;
+
+        statRefs.possession[0].textContent = s.home.possession + '%';
+        statRefs.possession[1].textContent = s.away.possession + '%';
+        statRefs.shots[0].textContent = s.home.shots;
+        statRefs.shots[1].textContent = s.away.shots;
+        statRefs.shotsOnTarget[0].textContent = s.home.shotsOnTarget;
+        statRefs.shotsOnTarget[1].textContent = s.away.shotsOnTarget;
+        statRefs.corners[0].textContent = s.home.corners;
+        statRefs.corners[1].textContent = s.away.corners;
+        statRefs.fouls[0].textContent = s.home.fouls;
+        statRefs.fouls[1].textContent = s.away.fouls;
+        statRefs.offsides[0].textContent = s.home.offsides;
+        statRefs.offsides[1].textContent = s.away.offsides;
+        statRefs.yellow[0].textContent = s.home.yellowCards;
+        statRefs.yellow[1].textContent = s.away.yellowCards;
+        statRefs.red[0].textContent = s.home.redCards;
+        statRefs.red[1].textContent = s.away.redCards;
+    }
+
+    function renderMatch(match) {
+        if (!match) return;
+
+        homeNameEl.textContent = match.homeTeam;
+        awayNameEl.textContent = match.awayTeam;
+        homeLabelEl.textContent = match.homeTeam;
+        awayLabelEl.textContent = match.awayTeam;
+        homeScoreEl.textContent = match.homeScore;
+        awayScoreEl.textContent = match.awayScore;
+        minuteEl.textContent = match.minute;
+        matchStateEl.textContent = match.isFinished ? 'Full-time' : 'Live';
+
+        const p = match.probability;
+        if (p) {
+            const hp = Math.round(p.home * 100);
+            const dp = Math.round(p.draw * 100);
+            const ap = Math.round(p.away * 100);
+
+            probHomeEl.style.width = hp + '%';
+            probDrawEl.style.width = dp + '%';
+            probAwayEl.style.width = ap + '%';
+            probHomeEl.textContent = hp + '%';
+            probDrawEl.textContent = dp + '%';
+            probAwayEl.textContent = ap + '%';
+        }
+
+        renderStats(match);
+
+        if (match.isFinished && match.manOfTheMatch) {
+            motmPlayerEl.textContent = match.manOfTheMatch;
+            motmTeamEl.textContent = match.manOfTheMatchTeam;
+            motmBanner.style.display = 'block';
+        } else {
+            motmBanner.style.display = 'none';
+        }
+    }
+
+    function addEventToFeed(ev) {
+        if (!ev) return;
+        const li = document.createElement('li');
+        li.className = 'event event-' + ev.type.toLowerCase();
+        const playerPart = (ev.player && ev.player !== '-')
+            ? `<span class="player">${ev.player}</span>`
+            : '';
+        li.innerHTML = `<span class="minute">${ev.minute}'</span>${playerPart}<span class="desc">${ev.description}</span>`;
+        feedEl.prepend(li);
+        while (feedEl.children.length > 40) {
+            feedEl.removeChild(feedEl.lastChild);
+        }
+    }
+
+    function connect() {
+        statusEl.textContent = 'Connecting…';
+        statusEl.className = 'status status-connecting';
+
+        // EventSource = the browser-native Server-Sent Events client.
+        // It keeps a single open HTTP connection and fires onmessage for
+        // every "data: ...\n\n" chunk the server pushes. If the connection
+        // drops, the browser retries automatically (no JS needed for that).
+        const source = new EventSource('/ticker/stream');
+
+        source.onopen = () => {
+            statusEl.textContent = '● Live';
+            statusEl.className = 'status status-live';
+        };
+
+        source.onmessage = (e) => {
+            try {
+                const update = JSON.parse(e.data);
+                renderMatch(update.match);
+                if (update.type === 'event') {
+                    addEventToFeed(update.event);
+                }
+            } catch (err) {
+                console.error('Could not parse ticker message', err);
+            }
+        };
+
+        source.onerror = () => {
+            statusEl.textContent = '↻ Reconnecting…';
+            statusEl.className = 'status status-reconnecting';
+            // No manual retry logic needed - EventSource reconnects on its own.
+        };
+    }
+
+    connect();
+</script>
+}
